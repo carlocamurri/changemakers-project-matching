@@ -34,8 +34,7 @@ class Individual():
         return id_list
 
     def __str__(self):
-        output = ('id_number={0} preference_list={1} available_proposals={2} '
-                  'partner={3}'.format(
+        output = ('id_number={0} preference_list={1} available_proposals={2} partner={3}'.format(
                      self.id_number,
                      self.get_id_list(self.preference_list),
                      self.get_id_list(self.available_proposals),
