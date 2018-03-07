@@ -1,13 +1,8 @@
 import sys
 
-from marriages_simulation import MarriagesSimulation
+from simulation import MarriagesSimulation
 
 def start_simulation(size):
-    """Start the stable marriages simulation with the given size.
-
-    Args:
-        size: The size of the simulation.
-    """
     simulation = MarriagesSimulation(size)
     simulation.populate()
     simulation.set_preferences()

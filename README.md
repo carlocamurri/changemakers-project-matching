@@ -1,6 +1,9 @@
-# python-stable-marriage
-An object-oriented python implementation of the Gale-Shapley algorithm to solve the stable marriage problem
+# UCL CHANGE MAKERS PROJECT
+UCL Moodle Extension based on the stable marriage algorithm to manage project assingments based on preferences.
 
-More about the stable marriage problem: https://en.wikipedia.org/wiki/Stable_marriage_problem
- 
-A simulation is considered stable if both members of a couple would not be happier with an alternative match.
+# HOW TO RUN
+Browse into src, then run the python script passing as parameter the population size for the simulation.
+```
+cd src
+python run.py 10
+```
