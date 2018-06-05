@@ -17,6 +17,10 @@ class MarriagesSimulation():
             self.women.append(Individual(i))
 
     def set_preferences(self):
+        """
+            Set preferences for each individual
+            Each individual can have an arbitrary amount of preferences
+        """
         for man in self.men:
             man.preference_list = self.random_woman_list()
             man.available_proposals = list(man.preference_list)
