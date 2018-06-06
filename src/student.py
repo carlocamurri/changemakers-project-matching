@@ -8,3 +8,11 @@ class Student:
 
     def is_matched(self):
         return self.project is not None
+
+    def pair(self, project):
+        self.project = project
+        project.student = self
+
+    def unpair(self):
+        self.project.student = None
+        self.project = None

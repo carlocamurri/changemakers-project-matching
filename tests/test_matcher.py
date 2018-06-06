@@ -2,108 +2,92 @@ import unittest
 
 from src.matcher import Matcher
 from src.student import Student
+from src.project import Project
 
 
 class MatcherTest(unittest.TestCase):
 
+    def setUp(self):
+        self.p_1 = Project(1)
+        self.p_2 = Project(1)
+        self.p_3 = Project(1)
+
     def test_matches_one_student_and_one_project(self):
-        student = Student(1, [1])
+        student = Student(1, [self.p_1])
         matcher = Matcher([student])
         matcher.match()
-        self.assertEqual(student.project, 1)
+        self.assertEqual(student.project, self.p_1)
 
     def test_each_student_is_prioritized(self):
-        student_1 = Student(1, [1, 2, 3])
-        student_2 = Student(2, [2, 1, 3])
-        student_3 = Student(3, [3, 1, 2])
+        student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
+        student_2 = Student(2, [self.p_2, self.p_1, self.p_3])
+        student_3 = Student(3, [self.p_3, self.p_1, self.p_2])
         matcher = Matcher([student_1, student_2, student_3])
         matcher.match()
-        self.assertEqual(student_1.project, 1)
-        self.assertEqual(student_2.project, 2)
-        self.assertEqual(student_3.project, 3)
+        self.assertEqual(student_1.project, self.p_1)
+        self.assertEqual(student_2.project, self.p_2)
+        self.assertEqual(student_3.project, self.p_3)
 
     def test_student_with_highest_grade_is_prioritized(self):
-        student_1 = Student(1, [1, 2], grade=10)
-        student_2 = Student(2, [1, 2], grade=7)
+        student_1 = Student(1, [self.p_1, self.p_2], grade=10)
+        student_2 = Student(2, [self.p_1, self.p_2], grade=7)
         matcher = Matcher([student_1, student_2])
         matcher.match()
-        self.assertEqual(student_1.project, 1)
-        self.assertEqual(student_2.project, 2)
+        self.assertEqual(student_1.project, self.p_1)
+        self.assertEqual(student_2.project, self.p_2)
 
     def test_everyone_matched_is_stable(self):
-        student_1 = Student(1, [1, 2])
-        student_2 = Student(2, [2, 1])
+        student_1 = Student(1, [self.p_1, self.p_2])
+        student_2 = Student(2, [self.p_2, self.p_1])
         students = [student_1, student_2]
         matcher = Matcher(students)
         matcher.match()
         self.assertTrue(matcher.is_stable())
 
     def test_some_unmatched_is_unstable(self):
-        student_1 = Student(1, [1, 2])
-        student_2 = Student(2, [2, 1])
+        student_1 = Student(1, [self.p_1, self.p_2])
+        student_2 = Student(2, [self.p_2, self.p_1])
         students = [student_1, student_2]
         matcher = Matcher(students)
         self.assertFalse(matcher.is_stable())
 
     def test_some_matched_none_is_unstable(self):
-        student_1 = Student(1, [1, 2])
-        student_2 = Student(2, [2, 1])
+        student_1 = Student(1, [self.p_1, self.p_2])
+        student_2 = Student(2, [self.p_2, self.p_1])
         student_1.project = None
         students = [student_1, student_2]
         matcher = Matcher(students)
         self.assertFalse(matcher.is_stable())
 
     def test_all_projects_are_available_at_beginning(self):
-        student_1 = Student(1, [1, 2, 3])
-        student_2 = Student(2, [2, 1, 3])
-        student_3 = Student(3, [3, 1, 2])
+        student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
+        student_2 = Student(2, [self.p_2, self.p_1, self.p_3])
+        student_3 = Student(3, [self.p_3, self.p_1, self.p_2])
         students = [student_1, student_2, student_3]
         matcher = Matcher(students)
         self.assertEqual( \
             matcher.get_available_projects(), \
-            set([1, 2, 3]) \
+            set([self.p_1, self.p_2, self.p_3]) \
         )
 
     def test_not_all_projects_are_available_if_one_is_taken(self):
-        student_1 = Student(1, [1, 2, 3])
-        student_2 = Student(2, [2, 1, 3])
-        student_3 = Student(3, [3, 1, 2])
-        student_2.project = 2
+        student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
+        student_2 = Student(2, [self.p_2, self.p_1, self.p_3])
+        student_3 = Student(3, [self.p_3, self.p_1, self.p_2])
+        student_2.project = self.p_2
         students = [student_1, student_2, student_3]
         matcher = Matcher(students)
         self.assertEqual( \
             matcher.get_available_projects(), \
-            set([1, 3]) \
+            set([self.p_1, self.p_3]) \
         )
 
-    def test_matched_student_returned_for_project(self):
-        student = Student(1, [1])
-        matcher = Matcher([student])
-        matcher.match()
-        self.assertEqual(matcher.get_matched_student(1), student)
-
-    def test_none_returned_if_student_not_matched(self):
-        student = Student(1, [1])
-        matcher = Matcher([student])
-        self.assertIsNone(matcher.get_matched_student(1))
-
-    def test_project_is_matched(self):
-        student = Student(1, [1])
-        matcher = Matcher([student])
-        matcher.match()
-        self.assertTrue(matcher.project_is_matched(1))
-
-    def test_project_is_unmatched(self):
-        student = Student(1, [1])
-        matcher = Matcher([student])
-        self.assertFalse(matcher.project_is_matched(1))
-
     def test_get_all_unmatched_students(self):
-        student_1 = Student(1, [1, 2, 3])
-        student_2 = Student(2, [2, 1, 3])
-        student_3 = Student(3, [3, 1, 2])
+        student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
+        student_2 = Student(2, [self.p_2, self.p_1, self.p_3])
+        student_3 = Student(3, [self.p_3, self.p_1, self.p_2])
         students = [student_1, student_2, student_3]
         matcher = Matcher(students)
-        student_1.project = 1
+        student_1.project = self.p_1
         student_2.project = None
         self.assertEqual(set(matcher.get_unmatched_students()), set([student_2, student_3]))
