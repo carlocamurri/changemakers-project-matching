@@ -22,15 +22,13 @@ class MatcherTest(unittest.TestCase):
         self.assertEqual(student_2.project, 2)
         self.assertEqual(student_3.project, 3)
 
-    '''
     def test_student_with_highest_grade_is_prioritized(self):
         student_1 = Student(1, [1, 2], grade=10)
         student_2 = Student(2, [1, 2], grade=7)
         matcher = Matcher([student_1, student_2])
         matcher.match()
         self.assertEqual(student_1.project, 1)
-        self.assertEqual(student_1.project, 2)
-    '''
+        self.assertEqual(student_2.project, 2)
 
     def test_everyone_matched_is_stable(self):
         student_1 = Student(1, [1, 2])
@@ -77,3 +75,35 @@ class MatcherTest(unittest.TestCase):
             matcher.get_available_projects(), \
             set([1, 3]) \
         )
+
+    def test_matched_student_returned_for_project(self):
+        student = Student(1, [1])
+        matcher = Matcher([student])
+        matcher.match()
+        self.assertEqual(matcher.get_matched_student(1), student)
+
+    def test_none_returned_if_student_not_matched(self):
+        student = Student(1, [1])
+        matcher = Matcher([student])
+        self.assertIsNone(matcher.get_matched_student(1))
+
+    def test_project_is_matched(self):
+        student = Student(1, [1])
+        matcher = Matcher([student])
+        matcher.match()
+        self.assertTrue(matcher.project_is_matched(1))
+
+    def test_project_is_unmatched(self):
+        student = Student(1, [1])
+        matcher = Matcher([student])
+        self.assertFalse(matcher.project_is_matched(1))
+
+    def test_get_all_unmatched_students(self):
+        student_1 = Student(1, [1, 2, 3])
+        student_2 = Student(2, [2, 1, 3])
+        student_3 = Student(3, [3, 1, 2])
+        students = [student_1, student_2, student_3]
+        matcher = Matcher(students)
+        student_1.project = 1
+        student_2.project = None
+        self.assertEqual(set(matcher.get_unmatched_students()), set([student_2, student_3]))
