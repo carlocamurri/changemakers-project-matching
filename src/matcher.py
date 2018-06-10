@@ -1,19 +1,25 @@
-class Matcher: 
+from src.priority import grade_priority_calculator
 
-    def __init__(self, students):
+
+class Matcher:
+
+    def __init__(self, students, priority_calculator=grade_priority_calculator):
         self.students = students
+        self.priority_calculator = priority_calculator
 
     def match(self):
         while not self.is_stable():
             for student in self.get_unmatched_students():
                 for project in student.project_priorities:
                     if not project.is_matched():
-                        student.pair(project)
+                        self.pair(student, project)
                         break
                     else:
-                        if project.student.grade < student.grade:
-                            project.student.unpair()
-                            student.pair(project)
+                        if self.priority_calculator(project.student, project) \
+                                < self.priority_calculator(student, project):
+                            project.student.project = None
+                            self.pair(student, project)
+                            break
 
     def is_stable(self):
         for student in self.students:
@@ -30,3 +36,7 @@ class Matcher:
 
     def get_unmatched_students(self):
         return [student for student in self.students if not student.is_matched()]
+
+    def pair(self, student, project):
+        student.project = project
+        project.student = student

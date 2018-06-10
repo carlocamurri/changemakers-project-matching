@@ -1,4 +1,6 @@
 import unittest
+import sys
+import logging
 
 from src.matcher import Matcher
 from src.student import Student
@@ -9,8 +11,17 @@ class MatcherTest(unittest.TestCase):
 
     def setUp(self):
         self.p_1 = Project(1)
-        self.p_2 = Project(1)
-        self.p_3 = Project(1)
+        self.p_2 = Project(2)
+        self.p_3 = Project(3)
+
+    def create_sample_students(self, n):
+        projects = [Project(i) for i in range(1, n + 1)]
+        students = [Student(i, projects) for i in range(1, n + 1)]
+        return students, projects
+
+    def assert_students_higher_priority_are_prioritized(self, students, projects):
+        for i, student in enumerate(students):
+            self.assertEqual(student.project, projects[-(i + 1)])
 
     def test_matches_one_student_and_one_project(self):
         student = Student(1, [self.p_1])
@@ -27,14 +38,6 @@ class MatcherTest(unittest.TestCase):
         self.assertEqual(student_1.project, self.p_1)
         self.assertEqual(student_2.project, self.p_2)
         self.assertEqual(student_3.project, self.p_3)
-
-    def test_student_with_highest_grade_is_prioritized(self):
-        student_1 = Student(1, [self.p_1, self.p_2], grade=10)
-        student_2 = Student(2, [self.p_1, self.p_2], grade=7)
-        matcher = Matcher([student_1, student_2])
-        matcher.match()
-        self.assertEqual(student_1.project, self.p_1)
-        self.assertEqual(student_2.project, self.p_2)
 
     def test_everyone_matched_is_stable(self):
         student_1 = Student(1, [self.p_1, self.p_2])
@@ -91,3 +94,27 @@ class MatcherTest(unittest.TestCase):
         student_1.project = self.p_1
         student_2.project = None
         self.assertEqual(set(matcher.get_unmatched_students()), set([student_2, student_3]))
+
+    def test_pair_student_project(self):
+        student = Student(1, [self.p_1])
+        matcher = Matcher([student])
+        matcher.pair(student, self.p_1)
+        self.assertEqual(student.project, self.p_1)
+
+    def test_student_with_highest_priority_is_prioritized(self):
+        student_1 = Student(1, [self.p_1, self.p_2])
+        student_2 = Student(2, [self.p_1, self.p_2])
+        def priority(student, project):
+            return 2 if student == student_1 else 1
+        matcher = Matcher([student_1, student_2], priority)
+        matcher.match()
+        self.assertEqual(student_1.project, self.p_1)
+        self.assertEqual(student_2.project, self.p_2)
+
+    def test_students_with_higher_priority_are_prioritized_in_order(self):
+        students, projects = self.create_sample_students(40)
+        def many_students_priority_calculator(student, project):
+            return students.index(student) + 1
+        matcher = Matcher(students, many_students_priority_calculator)
+        matcher.match()
+        self.assert_students_higher_priority_are_prioritized(students, projects)
