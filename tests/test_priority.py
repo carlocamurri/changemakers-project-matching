@@ -5,6 +5,7 @@ from src.student import Student
 from src.priority import grade_priority_calculator
 from src.priority import keywords_priority_calculator
 from src.priority import department_priority_calculator
+from src.priority import split_priority_calculator
 from src.priority import PrioritySplit
 
 
@@ -76,6 +77,35 @@ class DepartmentPriorityCalculatorTest(unittest.TestCase):
         project = Project(1, department=dept)
         student = Student(1, [project], department=dept)
         self.assertEqual(department_priority_calculator(student, project), 1)
+
+
+class SplitPriorityCalculatorTest(unittest.TestCase):
+
+    def test_split_calculator_is_weighted_correctly(self):
+        grade_score = 0.7
+        keywords_score = 0.2
+        department_score = 1
+        def grade_calculator(student, project):
+            return grade_score
+        def keywords_calculator(student, project):
+            return keywords_score
+        def department_calculator(student, project):
+            return department_score
+        split = PrioritySplit(0.5, 0.3, 0.2)
+        project = ProjectStub(split)
+        self.assertEqual(split_priority_calculator(
+            'a_student', \
+            project, \
+            grade_calculator=grade_calculator, \
+            keywords_calculator=keywords_calculator, \
+            department_calculator=department_calculator \
+        ), 0.35 + 0.06 + 0.2)
+
+
+class ProjectStub:
+
+    def __init__(self, priority_split):
+        self.priority_split = priority_split
 
 
 class PrioritySplitTest(unittest.TestCase):
