@@ -3,8 +3,8 @@ import sys
 import logging
 
 from src.matcher import Matcher
-from src.student import Student
-from src.project import Project
+from src.entities.student import Student
+from src.entities.project import Project
 
 
 class MatcherTest(unittest.TestCase):

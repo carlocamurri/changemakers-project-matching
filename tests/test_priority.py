@@ -1,7 +1,7 @@
 import unittest
 
-from src.project import Project
-from src.student import Student
+from src.entities.project import Project
+from src.entities.student import Student
 from src.priority import grade_priority_calculator
 from src.priority import keywords_priority_calculator
 from src.priority import department_priority_calculator

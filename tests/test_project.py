@@ -1,7 +1,7 @@
 import unittest
 
-from src.project import Project
-from src.supervisor import Supervisor
+from src.entities.project import Project
+from src.entities.supervisor import Supervisor
 
 
 class ProjectTest(unittest.TestCase):
