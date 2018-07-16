@@ -27,13 +27,6 @@ class Matcher:
                 return False
         return True
 
-    def get_available_projects(self):
-        available_projects = set(self.students[0].project_priorities)
-        for student in self.students:
-            if student.is_matched:
-                available_projects.remove(student.project)
-        return available_projects
-
     def get_unmatched_students(self):
         return [student for student in self.students if not student.is_matched]
 
