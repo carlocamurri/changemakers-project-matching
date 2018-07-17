@@ -62,38 +62,18 @@ class MatcherTest(unittest.TestCase):
         matcher = Matcher(students)
         self.assertFalse(matcher.is_stable())
 
-    def test_all_projects_are_available_at_beginning(self):
-        student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
-        student_2 = Student(2, [self.p_2, self.p_1, self.p_3])
-        student_3 = Student(3, [self.p_3, self.p_1, self.p_2])
-        students = [student_1, student_2, student_3]
-        matcher = Matcher(students)
-        self.assertEqual( \
-            matcher.get_available_projects(), \
-            set([self.p_1, self.p_2, self.p_3]) \
-        )
-
-    def test_not_all_projects_are_available_if_one_is_taken(self):
-        student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
-        student_2 = Student(2, [self.p_2, self.p_1, self.p_3])
-        student_3 = Student(3, [self.p_3, self.p_1, self.p_2])
-        student_2.project = self.p_2
-        students = [student_1, student_2, student_3]
-        matcher = Matcher(students)
-        self.assertEqual( \
-            matcher.get_available_projects(), \
-            set([self.p_1, self.p_3]) \
-        )
-
     def test_get_all_unmatched_students(self):
+        students = self.make_three_students()
+        matcher = Matcher(students)
+        students[0].project = self.p_1
+        students[1].project = None
+        self.assertEqual(set(matcher.get_unmatched_students()), set([students[1], students[2]]))
+
+    def make_three_students(self):
         student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
         student_2 = Student(2, [self.p_2, self.p_1, self.p_3])
         student_3 = Student(3, [self.p_3, self.p_1, self.p_2])
-        students = [student_1, student_2, student_3]
-        matcher = Matcher(students)
-        student_1.project = self.p_1
-        student_2.project = None
-        self.assertEqual(set(matcher.get_unmatched_students()), set([student_2, student_3]))
+        return [student_1, student_2, student_3]
 
     def test_pair_student_project(self):
         student = Student(1, [self.p_1])
