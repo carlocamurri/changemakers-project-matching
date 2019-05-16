@@ -9,17 +9,20 @@ class Matcher:
 
     def match(self):
         while not self.is_stable():
-            for student in self.get_unmatched_students():
-                for project in student.project_priorities:
-                    if not project.is_matched:
+            self.iterate_students()
+
+    def iterate_students(self):
+        for student in self.get_unmatched_students():
+            for project in student.project_priorities:
+                if not project.is_matched:
+                    self.pair(student, project)
+                    break
+                else:
+                    if self.priority_calculator(project.student, project) \
+                            < self.priority_calculator(student, project):
+                        project.student.project = None
                         self.pair(student, project)
                         break
-                    else:
-                        if self.priority_calculator(project.student, project) \
-                                < self.priority_calculator(student, project):
-                            project.student.project = None
-                            self.pair(student, project)
-                            break
 
     def is_stable(self):
         for student in self.students:

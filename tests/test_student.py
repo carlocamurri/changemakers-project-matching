@@ -1,6 +1,6 @@
 import unittest
 
-from src.entities.student import Student
+from src.student import Student
 
 
 class ProjectMock:

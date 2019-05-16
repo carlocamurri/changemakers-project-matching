@@ -1,10 +1,8 @@
 import unittest
-import sys
-import logging
 
 from src.matcher import Matcher
-from src.entities.student import Student
-from src.entities.project import Project
+from src.student import Student
+from src.project import Project
 
 
 class MatcherTest(unittest.TestCase):
@@ -67,7 +65,7 @@ class MatcherTest(unittest.TestCase):
         matcher = Matcher(students)
         students[0].project = self.p_1
         students[1].project = None
-        self.assertEqual(set(matcher.get_unmatched_students()), set([students[1], students[2]]))
+        self.assertEqual(set(matcher.get_unmatched_students()), {students[1], students[2]})
 
     def make_three_students(self):
         student_1 = Student(1, [self.p_1, self.p_2, self.p_3])
